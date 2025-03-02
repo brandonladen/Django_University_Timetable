@@ -36,7 +36,7 @@ class Instructor(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-class Class(models.Model):
+class Room(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     time_slot = models.CharField(max_length=50)  # e.g., '9:00 AM - 10:00 AM'
     room = models.CharField(max_length=100)
