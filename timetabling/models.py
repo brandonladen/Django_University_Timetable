@@ -28,6 +28,24 @@ class Unit(models.Model):
     def __str__(self):
         return self.name
 
+class Instructor(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class Class(models.Model):
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    time_slot = models.CharField(max_length=50)  # e.g., '9:00 AM - 10:00 AM'
+    room = models.CharField(max_length=100)
+    capacity = models.IntegerField()
+    lecturer = models.ForeignKey(Instructor, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.unit.name} - {self.time_slot} in {self.room}"
+
 class AcademicYear(models.Model):
     year = models.CharField(max_length=10)  # e.g., '2023/2024'
     start_date = models.DateField()
@@ -36,8 +54,8 @@ class AcademicYear(models.Model):
     def __str__(self):
         return self.year
 
-class Level(models.Model):
-    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE)
+class Year(models.Model):
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, related_name='years')
     level = models.IntegerField()  # e.g., 1, 2, 3, 4
 
     def __str__(self):
