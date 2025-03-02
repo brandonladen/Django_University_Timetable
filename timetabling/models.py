@@ -36,7 +36,7 @@ class AcademicYear(models.Model):
     def __str__(self):
         return self.year
 
-class Year(models.Model):
+class Level(models.Model):
     academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE)
     level = models.IntegerField()  # e.g., 1, 2, 3, 4
 
