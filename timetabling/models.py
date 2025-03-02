@@ -45,7 +45,7 @@ class Room(models.Model):
     time_slot = models.CharField(max_length=50)  # e.g., '9:00 AM - 10:00 AM'
 
     def __str__(self):
-        return f"{self.unit.name} - {self.time_slot} in {self.room}"
+        return f"{self.name}"
 
 class AcademicYear(models.Model):
     year = models.CharField(max_length=10)  # e.g., '2023/2024'
