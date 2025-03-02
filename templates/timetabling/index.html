@@ -196,7 +196,7 @@
                             <label for="academicYear" class="form-label">Academic Year</label>
                             <select id="academicYear" class="form-select">
                                 {% for year in academic_years %}
-                                    <option>{{ year.name }}</option>
+                                    <option>{{ year.year }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -214,8 +214,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="school" class="form-label">School</label>
                             <select id="school" class="form-select">
+                                <option value="">Select School</option>
                                 {% for school in schools %}
-                                    <option>{{ school.name }}</option>
+                                    <option value="{{ school.id }}">{{ school.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -224,9 +225,7 @@
                         <div class="bg-light rounded p-4">
                             <label for="department" class="form-label">Department</label>
                             <select id="department" class="form-select">
-                                {% for department in departments %}
-                                    <option>{{ department.name }}</option>
-                                {% endfor %}
+                                <option value="">Select Department</option>
                             </select>
                         </div>
                     </div>
@@ -234,9 +233,7 @@
                         <div class="bg-light rounded p-4">
                             <label for="course" class="form-label">Course</label>
                             <select id="course" class="form-select">
-                                {% for course in courses %}
-                                    <option>{{ course.name }}</option>
-                                {% endfor %}
+                                <option value="">Select Course</option>
                             </select>
                         </div>
                     </div>
@@ -245,18 +242,16 @@
                             <label for="year" class="form-label">Year</label>
                             <select id="year" class="form-select">
                                 {% for year in years %}
-                                    <option>{{ year.name }}</option>
+                                    <option>{{ year.level }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded p-4">
-                            <label for="units" class="form-label">Units</label>
-                            <select id="units" class="form-select">
-                                {% for unit in units %}
-                                    <option>{{ unit.name }}</option>
-                                {% endfor %}
+                            <label for="unit" class="form-label">Unit</label>
+                            <select id="unit" class="form-select">
+                                <option value="">Select Unit</option>
                             </select>
                         </div>
                     </div>
@@ -265,7 +260,7 @@
                             <label for="lecturer" class="form-label">Lecturer</label>
                             <select id="lecturer" class="form-select">
                                 {% for instructor in instructors %}
-                                    <option>{{ instructor.name }}</option>
+                                    <option>{{ instructor.first_name }} {{ instructor.last_name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -534,7 +529,67 @@
 <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
 
 <!-- Template Javascript -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const schoolSelect = document.getElementById("school");
+        const departmentSelect = document.getElementById("department");
+        const courseSelect = document.getElementById("course");
+        const unitSelect = document.getElementById("unit");
+    
+        schoolSelect.addEventListener("change", function() {
+            const schoolId = this.value;
+            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+            courseSelect.innerHTML = '<option value="">Select Course</option>';
+            unitSelect.innerHTML = '<option value="">Select Unit</option>';
+    
+            if (schoolId) {
+                fetch(`/get_departments/?school_id=${schoolId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(dept => {
+                            departmentSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                        });
+                    });
+            }
+        });
+    
+        departmentSelect.addEventListener("change", function() {
+            const departmentId = this.value;
+            courseSelect.innerHTML = '<option value="">Select Course</option>';
+            unitSelect.innerHTML = '<option value="">Select Unit</option>';
+    
+            if (departmentId) {
+                fetch(`/get_courses/?department_id=${departmentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(course => {
+                            courseSelect.innerHTML += `<option value="${course.id}">${course.name}</option>`;
+                        });
+                    });
+            }
+        });
+    
+        courseSelect.addEventListener("change", function() {
+            const courseId = this.value;
+            unitSelect.innerHTML = '<option value="">Select Unit</option>';
+    
+            if (courseId) {
+                fetch(`/get_units/?course_id=${courseId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(unit => {
+                            unitSelect.innerHTML += `<option value="${unit.id}">${unit.name}</option>`;
+                        });
+                    });
+            }
+        });
+    });
+    </script>
+    
 <script src="{% static 'js/main.js' %}"></script>
+
+
 </body>
 
 </html>

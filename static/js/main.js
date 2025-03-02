@@ -205,3 +205,58 @@
     
 })(jQuery);
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    const schoolSelect = document.getElementById("school");
+    const departmentSelect = document.getElementById("department");
+    const courseSelect = document.getElementById("course");
+    const unitSelect = document.getElementById("unit");
+
+    schoolSelect.addEventListener("change", function() {
+        const schoolId = this.value;
+        departmentSelect.innerHTML = '<option value="">Select Department</option>';
+        courseSelect.innerHTML = '<option value="">Select Course</option>';
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+
+        if (schoolId) {
+            fetch(`/get_departments/?school_id=${schoolId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(dept => {
+                        departmentSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                    });
+                });
+        }
+    });
+
+    departmentSelect.addEventListener("change", function() {
+        const departmentId = this.value;
+        courseSelect.innerHTML = '<option value="">Select Course</option>';
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+
+        if (departmentId) {
+            fetch(`/get_courses/?department_id=${departmentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(course => {
+                        courseSelect.innerHTML += `<option value="${course.id}">${course.name}</option>`;
+                    });
+                });
+        }
+    });
+
+    courseSelect.addEventListener("change", function() {
+        const courseId = this.value;
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+
+        if (courseId) {
+            fetch(`/get_units/?course_id=${courseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(unit => {
+                        unitSelect.innerHTML += `<option value="${unit.id}">${unit.name}</option>`;
+                    });
+                });
+        }
+    });
+});
