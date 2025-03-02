@@ -23,6 +23,7 @@ class Course(models.Model):
 
 class Unit(models.Model):
     name = models.CharField(max_length=100)
+    code = models.CharField(max_length=10, unique=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
