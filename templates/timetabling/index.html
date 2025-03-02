@@ -195,9 +195,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="academicYear" class="form-label">Academic Year</label>
                             <select id="academicYear" class="form-select">
-                                <option>2023/2024</option>
-                                <option>2024/2025</option>
-                                <option>2025/2026</option>
+                                {% for year in academic_years %}
+                                    <option>{{ year.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -214,9 +214,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="school" class="form-label">School</label>
                             <select id="school" class="form-select">
-                                <option>School of IT</option>
-                                <option>School of Business</option>
-                                <option>School of Engineering</option>
+                                {% for school in schools %}
+                                    <option>{{ school.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -224,9 +224,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="department" class="form-label">Department</label>
                             <select id="department" class="form-select">
-                                <option>Computer Science</option>
-                                <option>Information Technology</option>
-                                <option>Software Engineering</option>
+                                {% for department in departments %}
+                                    <option>{{ department.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -234,9 +234,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="course" class="form-label">Course</label>
                             <select id="course" class="form-select">
-                                <option>Web Development</option>
-                                <option>Database Systems</option>
-                                <option>Cloud Computing</option>
+                                {% for course in courses %}
+                                    <option>{{ course.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -244,10 +244,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="year" class="form-label">Year</label>
                             <select id="year" class="form-select">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
+                                {% for year in years %}
+                                    <option>{{ year.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -255,9 +254,9 @@
                         <div class="bg-light rounded p-4">
                             <label for="units" class="form-label">Units</label>
                             <select id="units" class="form-select">
-                                <option>Data Structures</option>
-                                <option>Software Engineering Principles</option>
-                                <option>Artificial Intelligence</option>
+                                {% for unit in units %}
+                                    <option>{{ unit.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -265,34 +264,15 @@
                         <div class="bg-light rounded p-4">
                             <label for="lecturer" class="form-label">Lecturer</label>
                             <select id="lecturer" class="form-select">
-                                <option>Dr. Smith</option>
-                                <option>Prof. Johnson</option>
-                                <option>Ms. Williams</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="bg-light rounded p-4">
-                            <label for="lecturer" class="form-label">Room</label>
-                            <select id="lecturer" class="form-select">
-                                <option>TB2</option>
-                                <option>TB3</option>
-                                <option>NL15</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-xl-3">
-                        <div class="bg-light rounded p-4">
-                            <label for="lecturer" class="form-label">Time</label>
-                            <select id="lecturer" class="form-select">
-                                <option>Slot 1</option>
-                                <option>Slot 2</option>
-                                <option>Slot 3</option>
+                                {% for instructor in instructors %}
+                                    <option>{{ instructor.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
+            
             <!-- Sale & Revenue End -->
 
 
