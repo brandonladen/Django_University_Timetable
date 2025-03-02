@@ -23,7 +23,7 @@ class Course(models.Model):
 
 class Unit(models.Model):
     name = models.CharField(max_length=100)
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=100, unique=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -41,8 +41,8 @@ class Room(models.Model):
     name = models.CharField(max_length=100)
     capacity = models.IntegerField()
     school = models.CharField(max_length=100) #name of room
-    lecturer = models.ForeignKey(Instructor, on_delete=models.CASCADE, null=True)
-    time_slot = models.CharField(max_length=50, null=True)  # e.g., '9:00 AM - 10:00 AM'
+    lecturer = models.ForeignKey(Instructor, on_delete=models.CASCADE, null=True, blank=True)
+    time_slot = models.CharField(max_length=50, null=True, blank=True)  # e.g., '9:00 AM - 10:00 AM'
 
     def __str__(self):
         return f"{self.name}"
