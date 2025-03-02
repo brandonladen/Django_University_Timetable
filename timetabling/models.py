@@ -41,6 +41,8 @@ class Room(models.Model):
     name = models.CharField(max_length=100)
     capacity = models.IntegerField()
     school = models.IntegerField(default="ALL")
+    lecturer = models.ForeignKey(Instructor, on_delete=models.CASCADE)
+    time_slot = models.CharField(max_length=50)  # e.g., '9:00 AM - 10:00 AM'
 
     def __str__(self):
         return f"{self.unit.name} - {self.time_slot} in {self.room}"
