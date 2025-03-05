@@ -57,3 +57,5 @@ docker-compose.override.yml
 
 # Windows
 Thumbs.db
+
+Django_University_Timetable/settings.py
