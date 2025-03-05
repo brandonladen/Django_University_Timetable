@@ -119,3 +119,41 @@ def get_class_schedules(request):
         })
 
     return JsonResponse({"schedules": schedule_list})
+
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import ClassSchedule
+
+def save_class(request):
+    if request.method == "POST":
+        academic_year = request.POST.get("academicYear")
+        semester = request.POST.get("semester")
+        school = request.POST.get("school")
+        department = request.POST.get("department")
+        course = request.POST.get("course")
+        year = request.POST.get("year")
+        unit = request.POST.get("unit")
+        lecturer = request.POST.get("lecturer")
+
+        # Validate required fields
+        if not all([academic_year, semester, school, department, course, year, unit, lecturer]):
+            return JsonResponse({"error": "All fields are required"}, status=400)
+
+        # Save to ClassSchedule model
+        class_schedule = ClassSchedule.objects.create(
+            academic_year_id=academic_year,
+            semester=semester,
+            school_id=school,
+            department_id=department,
+            course_id=course,
+            year_id=year,
+            unit_id=unit,
+            lecturer_id=lecturer
+        )
+        class_schedule.save()
+
+        return JsonResponse({"message": "Class schedule saved successfully!"}, status=200)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+

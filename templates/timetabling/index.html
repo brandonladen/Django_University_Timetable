@@ -188,16 +188,17 @@
 
 
 
-            <!-- Sale & Revenue Start -->
-            <form id="class-form">
+            <!-- Timetable input selection -->
+            <form id="class-form" method="POST" action="{% url 'save_class' %}">
+                {% csrf_token %}
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="academicYear" class="form-label">Academic Year</label>
-                                <select id="academicYear" class="form-select">
+                                <select id="academicYear" name="academicYear" class="form-select">
                                     {% for year in academic_years %}
-                                        <option>{{ year.year }}</option>
+                                        <option value="{{ year.id }}">{{ year.year }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -206,9 +207,9 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="semester" class="form-label">Semester</label>
-                                <select id="semester" class="form-select">
-                                    <option>Semester 1</option>
-                                    <option>Semester 2</option>
+                                <select id="semester" name="semester" class="form-select">
+                                    <option value="Semester 1">Semester 1</option>
+                                    <option value="Semester 2">Semester 2</option>
                                 </select>
                             </div>
                         </div>
@@ -216,7 +217,7 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="school" class="form-label">School</label>
-                                <select id="school" class="form-select">
+                                <select id="school" name="school" class="form-select">
                                     <option value="">Select School</option>
                                     {% for school in schools %}
                                         <option value="{{ school.id }}">{{ school.name }}</option>
@@ -228,7 +229,7 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="department" class="form-label">Department</label>
-                                <select id="department" class="form-select">
+                                <select id="department" name="department" class="form-select">
                                     <option value="">Select Department</option>
                                 </select>
                             </div>
@@ -237,7 +238,7 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="course" class="form-label">Course</label>
-                                <select id="course" class="form-select">
+                                <select id="course" name="course" class="form-select">
                                     <option value="">Select Course</option>
                                 </select>
                             </div>
@@ -246,9 +247,9 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="year" class="form-label">Year</label>
-                                <select id="year" class="form-select">
+                                <select id="year" name="year" class="form-select">
                                     {% for year in years %}
-                                        <option>{{ year.level }}</option>
+                                        <option value="{{ year.id }}">{{ year.level }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -257,7 +258,7 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="unit" class="form-label">Unit</label>
-                                <select id="unit" class="form-select">
+                                <select id="unit" name="unit" class="form-select">
                                     <option value="">Select Unit</option>
                                 </select>
                             </div>
@@ -266,25 +267,26 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="lecturer" class="form-label">Lecturer</label>
-                                <select id="lecturer" class="form-select">
-                                    <option>Select Lecturer</option>
+                                <select id="lecturer" name="lecturer" class="form-select">
+                                    <option value="">Select Lecturer</option>
                                 </select>
                             </div>
                         </div>
             
                         <!-- Submit Button -->
                         <div class="col-12 mt-3">
-                            <button type="button" id="save-class" class="btn btn-primary">Save Class</button>
+                            <button type="submit" id="save-class" class="btn btn-primary">Save Class</button>
                         </div>
                     </div>
                 </div>
             </form>
             
             
-            <!-- Sale & Revenue End -->
+            
+            <!-- timetable input end -->
 
 
-            <!-- Recent Sales Start -->
+            <!-- Front end timetable view -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-light text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -392,7 +394,7 @@
                 </div>
             </div>
             
-            <!-- Recent Sales End -->
+            <!-- Timetable view frontend view end -->
 
 
             <!-- Widgets Start -->

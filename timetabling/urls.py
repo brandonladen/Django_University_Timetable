@@ -12,4 +12,5 @@ urlpatterns = [
     path('get-instructors/<int:unit_id>/', views.get_instructors_by_unit, name='get_instructors_by_unit'),
     path('create_schedule/', views.create_class_schedule, name='create_schedule'),
     path('get_schedules/', views.get_class_schedules, name='get_schedules'),
+    path("save-class/", views.save_class, name="save_class"),
     ]
