@@ -1,5 +1,7 @@
 {% load static %}
 
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -287,6 +289,7 @@
 
 
             <!-- Front end timetable view -->
+
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-light text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -294,105 +297,22 @@
                         <a href="">Show All</a>
                     </div>
                     <div class="table-responsive">
-                        <table class="table text-center align-middle table-bordered table-hover mb-0">
+                        <table id="timetable" class="table text-center align-middle table-bordered table-hover mb-0">
                             <thead>
                                 <tr class="text-dark">
                                     <th scope="col">Day/Time</th>
-                                    <th scope="col">7:00-8:00</th>
-                                    <th scope="col">8:00-9:00</th>
-                                    <th scope="col">9:00-10:00</th>
-                                    <th scope="col">10:00-11:00</th>
-                                    <th scope="col">11:00-12:00</th>
-                                    <th scope="col">12:00-1:00</th>
-                                    <th scope="col">1:00-2:00</th>
-                                    <th scope="col">2:00-3:00</th>
-                                    <th scope="col">3:00-4:00</th>
-                                    <th scope="col">4:00-5:00</th>
-                                    <th scope="col">5:00-6:00</th>
-                                    <th scope="col">6:00-7:00</th>
+                                    {% for hour in hours %}
+                                        <th scope="col">{{ hour }}:00 - {{ hour|add:"1" }}:00</th>
+                                    {% endfor %}
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">Monday</th>
-                                    <td id="mon-7"></td>
-                                    <td id="mon-8"></td>
-                                    <td id="mon-9"></td>
-                                    <td id="mon-10"></td>
-                                    <td id="mon-11"></td>
-                                    <td id="mon-12"></td>
-                                    <td id="mon-13"></td>
-                                    <td id="mon-14"></td>
-                                    <td id="mon-15"></td>
-                                    <td id="mon-16"></td>
-                                    <td id="mon-17"></td>
-                                    <td id="mon-18"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Tuesday</th>
-                                    <td id="tue-7"></td>
-                                    <td id="tue-8"></td>
-                                    <td id="tue-9"></td>
-                                    <td id="tue-10"></td>
-                                    <td id="tue-11"></td>
-                                    <td id="tue-12"></td>
-                                    <td id="tue-13"></td>
-                                    <td id="tue-14"></td>
-                                    <td id="tue-15"></td>
-                                    <td id="tue-16"></td>
-                                    <td id="tue-17"></td>
-                                    <td id="tue-18"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Wednesday</th>
-                                    <td id="wed-7"></td>
-                                    <td id="wed-8"></td>
-                                    <td id="wed-9"></td>
-                                    <td id="wed-10"></td>
-                                    <td id="wed-11"></td>
-                                    <td id="wed-12"></td>
-                                    <td id="wed-13"></td>
-                                    <td id="wed-14"></td>
-                                    <td id="wed-15"></td>
-                                    <td id="wed-16"></td>
-                                    <td id="wed-17"></td>
-                                    <td id="wed-18"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Thursday</th>
-                                    <td id="thu-7"></td>
-                                    <td id="thu-8"></td>
-                                    <td id="thu-9"></td>
-                                    <td id="thu-10"></td>
-                                    <td id="thu-11"></td>
-                                    <td id="thu-12"></td>
-                                    <td id="thu-13"></td>
-                                    <td id="thu-14"></td>
-                                    <td id="thu-15"></td>
-                                    <td id="thu-16"></td>
-                                    <td id="thu-17"></td>
-                                    <td id="thu-18"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Friday</th>
-                                    <td id="fri-7"></td>
-                                    <td id="fri-8"></td>
-                                    <td id="fri-9"></td>
-                                    <td id="fri-10"></td>
-                                    <td id="fri-11"></td>
-                                    <td id="fri-12"></td>
-                                    <td id="fri-13"></td>
-                                    <td id="fri-14"></td>
-                                    <td id="fri-15"></td>
-                                    <td id="fri-16"></td>
-                                    <td id="fri-17"></td>
-                                    <td id="fri-18"></td>
-                                </tr>
+                            <tbody id="timetable-body">
+                                <!-- Data will be inserted here dynamically -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
+            </div>            
             
             <!-- Timetable view frontend view end -->
 
@@ -676,6 +596,45 @@ document.addEventListener("DOMContentLoaded", function () {
 });
  
 </script>
+
+<script>
+    $(document).ready(function() {
+        function loadTimetable() {
+            $.ajax({
+                url: "{% url 'class_timetable' %}",  // Make sure this matches the URL pattern
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    let timetableData = response.timetable_data;
+                    let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+    
+                    let tableContent = "";
+                    days.forEach(day => {
+                        tableContent += `<tr><th scope="row">${day}</th>`;
+                        hours.forEach(hour => {
+                            if (timetableData[day] && timetableData[day][hour]) {
+                                let classInfo = timetableData[day][hour];
+                                tableContent += `<td>${classInfo.unit} <br> (${classInfo.instructor})</td>`;
+                            } else {
+                                tableContent += `<td>-</td>`;
+                            }
+                        });
+                        tableContent += `</tr>`;
+                    });
+    
+                    $("#timetable-body").html(tableContent);
+                },
+                error: function(error) {
+                    console.error("Error fetching timetable data:", error);
+                }
+            });
+        }
+    
+        // Load timetable when the page is ready
+        loadTimetable();
+    });
+    </script>
     
 <script src="{% static 'js/main.js' %}"></script>
 

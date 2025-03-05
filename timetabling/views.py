@@ -153,7 +153,27 @@ def save_class(request):
         )
         class_schedule.save()
 
-        return JsonResponse({"message": "Class schedule saved successfully!"}, status=200)
-
+        return render(request, "timetabling/index.html")
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+def class_timetable(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # Check if request is AJAX
+        time_slots = TimeSlot.objects.all()
+
+        timetable_data = {}
+        for slot in time_slots:
+            day = slot.day
+            hour = slot.start_time.hour  # Extract the hour from start_time
+
+            if day not in timetable_data:
+                timetable_data[day] = {}
+
+            timetable_data[day][hour] = {
+                "unit": slot.unit.name,
+                "instructor": slot.instructor.first_name
+            }
+
+        return JsonResponse({"timetable_data": timetable_data})
+
+    # If not an AJAX request, render the template normally
+    return render(request, "timetabling/index.html")
