@@ -259,9 +259,7 @@
                         <div class="bg-light rounded p-4">
                             <label for="lecturer" class="form-label">Lecturer</label>
                             <select id="lecturer" class="form-select">
-                                {% for i in instructor %}
-                                    <option>{{ i.first_name }} {{ i.last_name }}</option>
-                                {% endfor %}
+                                    <option>Select Lecturer</option>
                             </select>
                         </div>
                     </div>
@@ -510,6 +508,7 @@
     const departmentSelect = document.getElementById("department");
     const courseSelect = document.getElementById("course");
     const unitSelect = document.getElementById("unit");
+    const lecturerSelect = document.getElementById("lecturer");
 
     schoolSelect.addEventListener("change", function () {
         const schoolId = this.value;
@@ -558,6 +557,36 @@
                 });
         }
     });
+
+    unitSelect.addEventListener("change", function () {
+        const unitId = this.value;
+
+        if (unitId) {
+            fetch(`/get-instructors/${unitId}/`)  // Call Django API
+                .then(response => response.json())
+                .then(data => {
+                    lecturerSelect.innerHTML = "";  // Clear existing options
+
+                    if (data.instructors.length > 0) {
+                        data.instructors.forEach(instructor => {
+                            let option = document.createElement("option");
+                            option.value = instructor.id;
+                            option.textContent = instructor.name;
+                            lecturerSelect.appendChild(option);
+                        });
+                    } else {
+                        let option = document.createElement("option");
+                        option.textContent = "No instructors available";
+                        option.disabled = true;
+                        lecturerSelect.appendChild(option);
+                    }
+                })
+                .catch(error => console.error("Error fetching instructors:", error));
+        } else {
+            lecturerSelect.innerHTML = "";  // Clear dropdown if no unit selected
+        }
+    });
+    
 });
 
    

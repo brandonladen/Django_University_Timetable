@@ -39,3 +39,8 @@ def get_units(request):
     course_id = request.GET.get('course_id')
     units = Unit.objects.filter(course_id=course_id).values('id', 'name')
     return JsonResponse(list(units), safe=False)
+
+def get_instructors_by_unit(request, unit_id):
+    instructors = Instructor.objects.filter(timeslot__unit_id=unit_id).distinct()
+    instructor_data = [{'id': instructor.id, 'name': f"{instructor.first_name} {instructor.last_name}"} for instructor in instructors]
+    return JsonResponse({'instructors': instructor_data})
