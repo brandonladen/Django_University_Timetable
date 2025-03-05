@@ -27,7 +27,7 @@ class Unit(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return f'{self.code} - {self.name}'
 
 class Instructor(models.Model):
     first_name = models.CharField(max_length=50)

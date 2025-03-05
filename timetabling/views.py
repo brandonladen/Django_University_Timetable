@@ -158,28 +158,23 @@ def save_class(request):
 
 def class_timetable(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # Check if request is AJAX
-        class_schedules = ClassSchedule.objects.all()
-
+        time_slots = TimeSlot.objects.all()  # Fetch all scheduled classes
+        
         timetable_data = {}
-        for schedule in class_schedules:
-            # Find the corresponding TimeSlot for this schedule
-            time_slots = TimeSlot.objects.filter(unit=schedule.unit, instructor=schedule.lecturer)
 
-            for slot in time_slots:
-                day = slot.day
-                hour = slot.start_time.hour  # Extract the hour from start_time
+        for slot in time_slots:
+            day = slot.day
+            start_hour = slot.start_time.hour  # Extract the starting hour
+            end_hour = slot.end_time.hour  # Extract the ending hour
 
-                if day not in timetable_data:
-                    timetable_data[day] = {}
+            if day not in timetable_data:
+                timetable_data[day] = {}
 
+            # Fill all time slots from start_hour to end_hour
+            for hour in range(start_hour, end_hour):  
                 timetable_data[day][hour] = {
-                    "unit": schedule.unit.name,
-                    "instructor": schedule.lecturer.first_name,
-                    "course": schedule.course.name,
-                    "year": schedule.year.level,  # Extract level instead of full object
-                    "department": schedule.department.name,
-                    "school": schedule.school.name,
-                    "time": f"{slot.start_time.strftime('%H:%M')} - {slot.end_time.strftime('%H:%M')}"
+                    "unit": slot.unit.code,
+                    "instructor": f"{slot.instructor.first_name} {slot.instructor.last_name}"
                 }
 
         return JsonResponse({"timetable_data": timetable_data})

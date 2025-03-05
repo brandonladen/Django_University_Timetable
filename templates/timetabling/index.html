@@ -301,9 +301,18 @@
                             <thead>
                                 <tr class="text-dark">
                                     <th scope="col">Day/Time</th>
-                                    {% for hour in hours %}
-                                        <th scope="col">{{ hour }}:00 - {{ hour|add:"1" }}:00</th>
-                                    {% endfor %}
+                                    <th scope="col">7:00 - 8:00</th>
+                                    <th scope="col">8:00 - 9:00</th>
+                                    <th scope="col">9:00 - 10:00</th>
+                                    <th scope="col">10:00 - 11:00</th>
+                                    <th scope="col">11:00 - 12:00</th>
+                                    <th scope="col">12:00 - 1:00</th>
+                                    <th scope="col">1:00 - 2:00</th>
+                                    <th scope="col">2:00 - 3:00</th>
+                                    <th scope="col">3:00 - 4:00</th>
+                                    <th scope="col">4:00 - 5:00</th>
+                                    <th scope="col">5:00 - 6:00</th>
+                                    <th scope="col">6:00 - 7:00</th>
                                 </tr>
                             </thead>
                             <tbody id="timetable-body">
@@ -607,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 success: function(response) {
                     let timetableData = response.timetable_data;
                     let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; // Ensure this matches actual times
+                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
                     let tableContent = "";
                     days.forEach(day => {
@@ -615,13 +624,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         hours.forEach(hour => {
                             if (timetableData[day] && timetableData[day][hour]) {
                                 let classInfo = timetableData[day][hour];
-                                tableContent += `<td>
-                                    <strong>${classInfo.unit}</strong><br>
-                                    <em>${classInfo.instructor}</em><br>
-                                    ${classInfo.course} - Year ${classInfo.year} <br>
-                                    ${classInfo.department}, ${classInfo.school} <br>
-                                    <span class="text-muted">${classInfo.time}</span>
-                                </td>`;
+                                tableContent += `<td>${classInfo.unit}</td>`;
                             } else {
                                 tableContent += `<td>-</td>`;
                             }
@@ -641,6 +644,7 @@ document.addEventListener("DOMContentLoaded", function () {
         loadTimetable();
     });
 </script>
+
 
     
 <script src="{% static 'js/main.js' %}"></script>
