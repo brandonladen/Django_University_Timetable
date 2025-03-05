@@ -601,28 +601,34 @@ document.addEventListener("DOMContentLoaded", function () {
     $(document).ready(function() {
         function loadTimetable() {
             $.ajax({
-                url: "{% url 'class_timetable' %}",  // Make sure this matches the URL pattern
+                url: "{% url 'class_timetable' %}",  // Ensure this matches your Django URL pattern
                 type: "GET",
                 dataType: "json",
                 success: function(response) {
                     let timetableData = response.timetable_data;
                     let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-    
+                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; // Ensure this matches actual times
+
                     let tableContent = "";
                     days.forEach(day => {
                         tableContent += `<tr><th scope="row">${day}</th>`;
                         hours.forEach(hour => {
                             if (timetableData[day] && timetableData[day][hour]) {
                                 let classInfo = timetableData[day][hour];
-                                tableContent += `<td>${classInfo.unit} <br> (${classInfo.instructor})</td>`;
+                                tableContent += `<td>
+                                    <strong>${classInfo.unit}</strong><br>
+                                    <em>${classInfo.instructor}</em><br>
+                                    ${classInfo.course} - Year ${classInfo.year} <br>
+                                    ${classInfo.department}, ${classInfo.school} <br>
+                                    <span class="text-muted">${classInfo.time}</span>
+                                </td>`;
                             } else {
                                 tableContent += `<td>-</td>`;
                             }
                         });
                         tableContent += `</tr>`;
                     });
-    
+
                     $("#timetable-body").html(tableContent);
                 },
                 error: function(error) {
@@ -630,11 +636,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         }
-    
+
         // Load timetable when the page is ready
         loadTimetable();
     });
-    </script>
+</script>
+
     
 <script src="{% static 'js/main.js' %}"></script>
 
