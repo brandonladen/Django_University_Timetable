@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Department, School, AcademicYear, Course, Year, Unit, Room, Instructor, TimeSlot
+from .models import Department, School, AcademicYear, Course, Year, Unit, Room, Instructor, TimeSlot, ClassSchedule
 # Register your models here.
 
 admin.site.register(Department)
@@ -11,3 +11,4 @@ admin.site.register(Unit)
 admin.site.register(Room)
 admin.site.register(Instructor)
 admin.site.register(TimeSlot)
+admin.site.register(ClassSchedule)

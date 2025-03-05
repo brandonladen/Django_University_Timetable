@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+import json
 from django.http import JsonResponse
-from .models import School, Department, Course, Unit, Instructor, Room, AcademicYear, Year
+from .models import School, Department, Course, Unit, Instructor, Room, AcademicYear, Year, ClassSchedule, TimeSlot
 
 
 def signin(request):
@@ -44,3 +46,76 @@ def get_instructors_by_unit(request, unit_id):
     instructors = Instructor.objects.filter(timeslot__unit_id=unit_id).distinct()
     instructor_data = [{'id': instructor.id, 'name': f"{instructor.first_name} {instructor.last_name}"} for instructor in instructors]
     return JsonResponse({'instructors': instructor_data})
+
+@csrf_exempt
+def create_class_schedule(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            academic_year = data.get("academic_year")
+            semester = data.get("semester")
+            school_id = data.get("school")
+            department_id = data.get("department")
+            course_id = data.get("course")
+            year = data.get("year")
+            unit_id = data.get("unit")
+            lecturer_id = data.get("lecturer")
+
+            # Ensure required fields exist
+            if not all([academic_year, semester, school_id, department_id, course_id, year, unit_id, lecturer_id]):
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+
+            school = get_object_or_404(School, id=school_id)
+            department = get_object_or_404(Department, id=department_id)
+            course = get_object_or_404(Course, id=course_id)
+            unit = get_object_or_404(Unit, id=unit_id)
+            lecturer = get_object_or_404(Instructor, id=lecturer_id)
+
+            # Save ClassSchedule
+            schedule = ClassSchedule.objects.create(
+                academic_year=academic_year,
+                semester=semester,
+                school=school,
+                department=department,
+                course=course,
+                year=year,
+                unit=unit,
+                lecturer=lecturer
+            )
+
+            return JsonResponse({"message": "Class schedule created successfully", "schedule_id": schedule.id})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+def get_class_schedules(request):
+    schedules = ClassSchedule.objects.all()
+    schedule_list = []
+
+    for schedule in schedules:
+        # Fetch corresponding timeslot
+        timeslot = TimeSlot.objects.filter(instructor=schedule.lecturer, unit=schedule.unit).first()
+        timeslot_data = {
+            "day": timeslot.day if timeslot else "Not Assigned",
+            "start_time": timeslot.start_time.strftime("%H:%M") if timeslot else "N/A",
+            "end_time": timeslot.end_time.strftime("%H:%M") if timeslot else "N/A",
+        } if timeslot else {}
+
+        schedule_list.append({
+            "id": schedule.id,
+            "academic_year": schedule.academic_year,
+            "semester": schedule.semester,
+            "school": schedule.school.name,
+            "department": schedule.department.name,
+            "course": schedule.course.name,
+            "year": schedule.year,
+            "unit": schedule.unit.name,
+            "lecturer": schedule.lecturer.name,
+            "timeslot": timeslot_data
+        })
+
+    return JsonResponse({"schedules": schedule_list})

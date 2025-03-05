@@ -81,3 +81,16 @@ class TimeSlot(models.Model):
 
     def __str__(self):
         return f"{self.instructor} - {self.unit} ({self.day} {self.start_time} - {self.end_time})"
+    
+class ClassSchedule(models.Model):
+    academic_year = models.ForeignKey('AcademicYear', on_delete=models.CASCADE)
+    semester = models.CharField(max_length=20)
+    school = models.ForeignKey('School', on_delete=models.CASCADE)
+    department = models.ForeignKey('Department', on_delete=models.CASCADE)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+    year = models.ForeignKey('Year', on_delete=models.CASCADE)
+    unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
+    lecturer = models.ForeignKey('Instructor', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.course} - {self.unit} ({self.lecturer})"
