@@ -15,7 +15,7 @@ Follow these steps to set up the project locally:
 
 1. **Clone the repository** (if applicable):
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/brandonladen/Django_University_Timetable.git
    cd Django_University_Timetable
    ```
 
