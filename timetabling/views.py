@@ -13,11 +13,13 @@ def index(request):
     schools = School.objects.all()
     academic_years = AcademicYear.objects.all()
     years = Year.objects.all()
+    instructor = Instructor.objects.all()
 
     context = {
         'schools': schools,
         'academic_years': academic_years,
         'years': years,
+        'instructor' : instructor
     }
 
     return render(request, 'timetabling/index.html', context)
