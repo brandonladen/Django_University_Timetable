@@ -476,15 +476,18 @@ $(document).ready(function() {
                 let timetableContainer = $("#timetable-container");
                 timetableContainer.html("");  // Clear previous content
 
+                let hasAnyClass = false; // Global flag to check if there's any data
+
                 for (let department in timetableData) {
                     for (let year in timetableData[department]) {
                         let hasClass = false;  // Flag to check if there are any scheduled classes
 
-                        // Check if there is at least one scheduled class
+                        // Check if at least one scheduled class exists
                         for (let day in timetableData[department][year]) {
                             if (Object.keys(timetableData[department][year][day]).length > 0) {
                                 hasClass = true;
-                                break; // No need to check further, we found a class
+                                hasAnyClass = true; // If we find a class, set this flag to true
+                                break;
                             }
                         }
 
@@ -520,6 +523,11 @@ $(document).ready(function() {
                         timetableContainer.append(tableHTML);
                     }
                 }
+
+                // If no classes exist at all, display "No timetable generated"
+                if (!hasAnyClass) {
+                    timetableContainer.html('<p class="text-center text-muted">No timetable generated</p>');
+                }
             },
             error: function(error) {
                 console.error("Error fetching timetable data:", error);
@@ -530,7 +538,6 @@ $(document).ready(function() {
     // Load timetable when the page is ready
     loadTimetable();
 });
-
 
 </script>
 
