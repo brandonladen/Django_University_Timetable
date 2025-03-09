@@ -160,6 +160,10 @@ def class_timetable(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # Check if request is AJAX
         timetable_data = {}
 
+        # Fetch the current academic year (ensure your model has this field)
+        current_academic_year = AcademicYear.objects.filter(is_active=True).first()
+        academic_year_str = current_academic_year.year if current_academic_year else "Cannot fetch data"
+
         # Fetch all scheduled classes
         class_schedules = ClassSchedule.objects.all()
 
@@ -190,7 +194,7 @@ def class_timetable(request):
                         "instructor": f"{schedule.lecturer.first_name} {schedule.lecturer.last_name}"
                     }
 
-        return JsonResponse({"timetable_data": timetable_data})
+        return JsonResponse({"timetable_data": timetable_data, "academic_year_str": academic_year_str})
 
     return render(request, "timetabling/index.html")
 

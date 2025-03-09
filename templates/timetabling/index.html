@@ -461,86 +461,109 @@ document.addEventListener("DOMContentLoaded", function () {
  
 </script>
 
+
 <script>
-$(document).ready(function() {
-    function loadTimetable() {
-        $.ajax({
-            url: "{% url 'class_timetable' %}",
-            type: "GET",
-            dataType: "json",
-            success: function(response) {
-                let timetableData = response.timetable_data;
-                let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-                let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-
-                let timetableContainer = $("#timetable-container");
-                timetableContainer.html("");  // Clear previous content
-
-                let hasAnyClass = false; // Global flag to check if there's any data
-
-                for (let department in timetableData) {
-                    for (let year in timetableData[department]) {
-                        let hasClass = false;  // Flag to check if there are any scheduled classes
-
-                        // Check if at least one scheduled class exists
-                        for (let day in timetableData[department][year]) {
-                            if (Object.keys(timetableData[department][year][day]).length > 0) {
-                                hasClass = true;
-                                hasAnyClass = true; // If we find a class, set this flag to true
-                                break;
+    $(document).ready(function() {
+        function loadTimetable() {
+            $.ajax({
+                url: "{% url 'class_timetable' %}",
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    let timetableData = response.timetable_data;
+                    let academicYear = response.academic_year_str;
+                    let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+    
+                    let timetableContainer = $("#timetable-container");
+                    timetableContainer.html("");  // Clear previous content
+    
+                    let hasAnyClass = false; // Flag to check if there's any data
+    
+                    for (let department in timetableData) {
+                        for (let year in timetableData[department]) {
+                            let hasClass = false;  
+                            let courseDetails = new Set(); // Store unique course details
+    
+                            // Check if at least one scheduled class exists
+                            for (let day in timetableData[department][year]) {
+                                if (Object.keys(timetableData[department][year][day]).length > 0) {
+                                    hasClass = true;
+                                    hasAnyClass = true;
+                                    break;
+                                }
                             }
-                        }
-
-                        // If no classes exist for this department-year, skip creating the table
-                        if (!hasClass) continue;
-
-                        let tableHTML = `
-                            <div class="timetable-section">
-                                <h4 class="text-center">${department} Timetable - ${year}</h4>
-                                <table class="table text-center align-middle table-bordered table-hover mb-4">
-                                    <thead>
-                                        <tr class="text-dark">
-                                            <th scope="col">Day/Time</th>`;
-                        hours.forEach(hour => {
-                            tableHTML += `<th scope="col">${hour}:00 - ${hour + 1}:00</th>`;
-                        });
-                        tableHTML += `</tr></thead><tbody>`;
-
-                        days.forEach(day => {
-                            tableHTML += `<tr><th scope="row">${day}</th>`;
+    
+                            // If no classes exist for this department-year, skip creating the table
+                            if (!hasClass) continue;
+    
+                            let tableHTML = `
+                                <div class="timetable-section">
+                                    <h5 class="text-center">MASENO UNIVERSITY</h5>
+                                    <h5 class="text-center">DEPARTMENT OF ${department}</h5>
+                                    <h5 class="text-center">${academicYear}</h5>
+                                    <h5 class="text-center">TEACHING TIMETABLE - ${year}</h5>
+                                    <table class="table text-center align-middle table-bordered table-hover mb-4">
+                                        <thead>
+                                            <tr class="text-dark">
+                                                <th scope="col">Day/Time</th>`;
                             hours.forEach(hour => {
-                                if (timetableData[department][year][day] && timetableData[department][year][day][hour]) {
-                                    let classInfo = timetableData[department][year][day][hour];
-                                    tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
-                                } else {
-                                    tableHTML += `<td>-</td>`;
+                                tableHTML += `<th scope="col">${hour}:00 - ${hour + 1}:00</th>`;
+                            });
+                            tableHTML += `</tr></thead><tbody>`;
+    
+                            // Loop through each day and populate the table
+                            days.forEach(day => {
+                                tableHTML += `<tr><th scope="row">${day}</th>`;
+                                hours.forEach(hour => {
+                                    if (timetableData[department][year][day] && timetableData[department][year][day][hour]) {
+                                        let classInfo = timetableData[department][year][day][hour];
+                                        tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
+    
+                                        // Store course details for the extra row
+                                        courseDetails.add(`${classInfo.unit} - ${classInfo.course} (${classInfo.instructor})`);
+                                    } else {
+                                        tableHTML += `<td>-</td>`;
+                                    }
+                                });
+                                tableHTML += `</tr>`;
+    
+                                // After Friday, add the extra row with course details
+                                if (day === "Friday") {
+                                    tableHTML += `<tr>
+                                        <td colspan="${hours.length + 1}" class="text-start text-primary">
+                                            <strong>Course Information:</strong>
+                                            <ul class="list-unstyled ms-3">`;  // Add margin for indentation
+                                    courseDetails.forEach(course => {
+                                        tableHTML += `<li>- ${course}</li>`;
+                                    });
+                                    tableHTML += `</ul>
+                                        </td>
+                                    </tr>`;
                                 }
                             });
-                            tableHTML += `</tr>`;
-                        });
-
-                        tableHTML += `</tbody></table></div>`;
-                        timetableContainer.append(tableHTML);
+    
+                            tableHTML += `</tbody></table></div>`;
+                            timetableContainer.append(tableHTML);
+                        }
                     }
+    
+                    // If no classes exist at all, display "No timetable generated"
+                    if (!hasAnyClass) {
+                        timetableContainer.html('<p class="text-center text-muted">No timetable generated</p>');
+                    }
+                },
+                error: function(error) {
+                    console.error("Error fetching timetable data:", error);
                 }
-
-                // If no classes exist at all, display "No timetable generated"
-                if (!hasAnyClass) {
-                    timetableContainer.html('<p class="text-center text-muted">No timetable generated</p>');
-                }
-            },
-            error: function(error) {
-                console.error("Error fetching timetable data:", error);
-            }
-        });
-    }
-
-    // Load timetable when the page is ready
-    loadTimetable();
-});
-
-</script>
-
+            });
+        }
+    
+        // Load timetable when the page is ready
+        loadTimetable();
+    });
+    </script>
+    
 
 
     

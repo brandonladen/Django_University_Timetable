@@ -48,9 +48,10 @@ class Room(models.Model):
         return f"{self.name}"
 
 class AcademicYear(models.Model):
-    year = models.CharField(max_length=10)  # e.g., '2023/2024'
+    year = models.CharField(max_length=100)  # e.g., '2023/2024'
     start_date = models.DateField()
     end_date = models.DateField()
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.year
