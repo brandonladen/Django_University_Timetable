@@ -160,23 +160,26 @@ def class_timetable(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # Check if request is AJAX
         timetable_data = {}
 
-        # Fetch all scheduled classes and their associated timeslots
+        # Fetch all scheduled classes
         class_schedules = ClassSchedule.objects.all()
 
         for schedule in class_schedules:
+            dept_name = schedule.department.name  # Group by department
+            if dept_name not in timetable_data:
+                timetable_data[dept_name] = {}
+
             time_slots = TimeSlot.objects.filter(unit=schedule.unit, instructor=schedule.lecturer)
 
             for slot in time_slots:
                 day = slot.day
-                start_hour = slot.start_time.hour  # Extract the starting hour
-                end_hour = slot.end_time.hour  # Extract the ending hour
+                start_hour = slot.start_time.hour  
+                end_hour = slot.end_time.hour  
 
-                if day not in timetable_data:
-                    timetable_data[day] = {}
+                if day not in timetable_data[dept_name]:
+                    timetable_data[dept_name][day] = {}
 
-                # Fill all time slots from start_hour to end_hour
                 for hour in range(start_hour, end_hour):  
-                    timetable_data[day][hour] = {
+                    timetable_data[dept_name][day][hour] = {
                         "unit": schedule.unit.code,
                         "course": schedule.course.name,
                         "instructor": f"{schedule.lecturer.first_name} {schedule.lecturer.last_name}"
@@ -184,5 +187,4 @@ def class_timetable(request):
 
         return JsonResponse({"timetable_data": timetable_data})
 
-    # If not an AJAX request, render the template normally
     return render(request, "timetabling/index.html")

@@ -198,7 +198,8 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="bg-light rounded p-4">
                                 <label for="academicYear" class="form-label">Academic Year</label>
-                                <select id="academicYear" name="academicYear" class="form-select">
+                                <select id="academicYear" name="academicYear" class="form-select">\
+                                    <option value="" disabled>Select Academic Year</option>
                                     {% for year in academic_years %}
                                         <option value="{{ year.id }}">{{ year.year }}</option>
                                     {% endfor %}
@@ -210,6 +211,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="semester" class="form-label">Semester</label>
                                 <select id="semester" name="semester" class="form-select">
+                                    <option value="" disabled>Select Semester</option>
                                     <option value="Semester 1">Semester 1</option>
                                     <option value="Semester 2">Semester 2</option>
                                 </select>
@@ -220,7 +222,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="school" class="form-label">School</label>
                                 <select id="school" name="school" class="form-select">
-                                    <option value="">Select School</option>
+                                    <option value="" disabled>Select School</option>
                                     {% for school in schools %}
                                         <option value="{{ school.id }}">{{ school.name }}</option>
                                     {% endfor %}
@@ -232,7 +234,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="department" class="form-label">Department</label>
                                 <select id="department" name="department" class="form-select">
-                                    <option value="">Select Department</option>
+                                    <option value="" disabled>Select Department</option>
                                 </select>
                             </div>
                         </div>
@@ -241,6 +243,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="course" class="form-label">Course</label>
                                 <select id="course" name="course" class="form-select">
+                                    <option value="" disabled>Select Course</option>
                                     <option value="">Select Course</option>
                                 </select>
                             </div>
@@ -250,6 +253,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="year" class="form-label">Year</label>
                                 <select id="year" name="year" class="form-select">
+                                    <option value="" disabled>Select Year</option>
                                     {% for year in years %}
                                         <option value="{{ year.id }}">{{ year.level }}</option>
                                     {% endfor %}
@@ -261,7 +265,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="unit" class="form-label">Unit</label>
                                 <select id="unit" name="unit" class="form-select">
-                                    <option value="">Select Unit</option>
+                                    <option value="" disabled>Select Unit</option>
                                 </select>
                             </div>
                         </div>
@@ -270,7 +274,7 @@
                             <div class="bg-light rounded p-4">
                                 <label for="lecturer" class="form-label">Lecturer</label>
                                 <select id="lecturer" name="lecturer" class="form-select">
-                                    <option value="">Select Lecturer</option>
+                                    <option value="" disabled>Select Lecturer</option>
                                 </select>
                             </div>
                         </div>
@@ -290,38 +294,10 @@
 
             <!-- Front end timetable view -->
 
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Class Timetable</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="timetable" class="table text-center align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-dark">
-                                    <th scope="col">Day/Time</th>
-                                    <th scope="col">7:00 - 8:00</th>
-                                    <th scope="col">8:00 - 9:00</th>
-                                    <th scope="col">9:00 - 10:00</th>
-                                    <th scope="col">10:00 - 11:00</th>
-                                    <th scope="col">11:00 - 12:00</th>
-                                    <th scope="col">12:00 - 1:00</th>
-                                    <th scope="col">1:00 - 2:00</th>
-                                    <th scope="col">2:00 - 3:00</th>
-                                    <th scope="col">3:00 - 4:00</th>
-                                    <th scope="col">4:00 - 5:00</th>
-                                    <th scope="col">5:00 - 6:00</th>
-                                    <th scope="col">6:00 - 7:00</th>
-                                </tr>
-                            </thead>
-                            <tbody id="timetable-body">
-                                <!-- Data will be inserted here dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>            
+            <div id="timetable-container" class="container-fluid pt-4 px-4">
+                <!-- Timetable tables will be dynamically inserted here -->
+            </div>
+                     
             
             <!-- Timetable view frontend view end -->
 
@@ -607,42 +583,60 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <script>
-    $(document).ready(function() {
-        function loadTimetable() {
-            $.ajax({
-                url: "{% url 'class_timetable' %}",  // Ensure this matches your Django URL pattern
-                type: "GET",
-                dataType: "json",
-                success: function(response) {
-                    let timetableData = response.timetable_data;
-                    let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-                    let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+$(document).ready(function() {
+    function loadTimetable() {
+        $.ajax({
+            url: "{% url 'class_timetable' %}",
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                let timetableData = response.timetable_data;
+                let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+                let hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-                    let tableContent = "";
+                let timetableContainer = $("#timetable-container");
+                timetableContainer.html("");  // Clear previous content
+
+                for (let department in timetableData) {
+                    let tableHTML = `
+                        <div class="timetable-section">
+                            <h4 class="text-center">${department} Timetable</h4>
+                            <table class="table text-center align-middle table-bordered table-hover mb-4">
+                                <thead>
+                                    <tr class="text-dark">
+                                        <th scope="col">Day/Time</th>`;
+                    hours.forEach(hour => {
+                        tableHTML += `<th scope="col">${hour}:00 - ${hour + 1}:00</th>`;
+                    });
+                    tableHTML += `</tr></thead><tbody>`;
+
                     days.forEach(day => {
-                        tableContent += `<tr><th scope="row">${day}</th>`;
+                        tableHTML += `<tr><th scope="row">${day}</th>`;
                         hours.forEach(hour => {
-                            if (timetableData[day] && timetableData[day][hour]) {
-                                let classInfo = timetableData[day][hour];
-                                tableContent += `<td>${classInfo.unit}</td>`;
+                            if (timetableData[department][day] && timetableData[department][day][hour]) {
+                                let classInfo = timetableData[department][day][hour];
+                                tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
                             } else {
-                                tableContent += `<td>-</td>`;
+                                tableHTML += `<td>-</td>`;
                             }
                         });
-                        tableContent += `</tr>`;
+                        tableHTML += `</tr>`;
                     });
 
-                    $("#timetable-body").html(tableContent);
-                },
-                error: function(error) {
-                    console.error("Error fetching timetable data:", error);
+                    tableHTML += `</tbody></table></div>`;
+                    timetableContainer.append(tableHTML);
                 }
-            });
-        }
+            },
+            error: function(error) {
+                console.error("Error fetching timetable data:", error);
+            }
+        });
+    }
 
-        // Load timetable when the page is ready
-        loadTimetable();
-    });
+    // Load timetable when the page is ready
+    loadTimetable();
+});
+
 </script>
 
 
