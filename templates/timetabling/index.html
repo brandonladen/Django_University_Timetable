@@ -295,8 +295,9 @@
             <!-- Front end timetable view -->
 
             <div id="timetable-container" class="container-fluid pt-4 px-4">
-                <!-- Timetable tables will be dynamically inserted here -->
+                <!-- Department & Year-specific timetable tables will be dynamically inserted here -->
             </div>
+            
                      
             
             <!-- Timetable view frontend view end -->
@@ -598,33 +599,48 @@ $(document).ready(function() {
                 timetableContainer.html("");  // Clear previous content
 
                 for (let department in timetableData) {
-                    let tableHTML = `
-                        <div class="timetable-section">
-                            <h4 class="text-center">${department} Timetable</h4>
-                            <table class="table text-center align-middle table-bordered table-hover mb-4">
-                                <thead>
-                                    <tr class="text-dark">
-                                        <th scope="col">Day/Time</th>`;
-                    hours.forEach(hour => {
-                        tableHTML += `<th scope="col">${hour}:00 - ${hour + 1}:00</th>`;
-                    });
-                    tableHTML += `</tr></thead><tbody>`;
+                    for (let year in timetableData[department]) {
+                        let hasClass = false;  // Flag to check if there are any scheduled classes
 
-                    days.forEach(day => {
-                        tableHTML += `<tr><th scope="row">${day}</th>`;
-                        hours.forEach(hour => {
-                            if (timetableData[department][day] && timetableData[department][day][hour]) {
-                                let classInfo = timetableData[department][day][hour];
-                                tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
-                            } else {
-                                tableHTML += `<td>-</td>`;
+                        // Check if there is at least one scheduled class
+                        for (let day in timetableData[department][year]) {
+                            if (Object.keys(timetableData[department][year][day]).length > 0) {
+                                hasClass = true;
+                                break; // No need to check further, we found a class
                             }
-                        });
-                        tableHTML += `</tr>`;
-                    });
+                        }
 
-                    tableHTML += `</tbody></table></div>`;
-                    timetableContainer.append(tableHTML);
+                        // If no classes exist for this department-year, skip creating the table
+                        if (!hasClass) continue;
+
+                        let tableHTML = `
+                            <div class="timetable-section">
+                                <h4 class="text-center">${department} Timetable - ${year}</h4>
+                                <table class="table text-center align-middle table-bordered table-hover mb-4">
+                                    <thead>
+                                        <tr class="text-dark">
+                                            <th scope="col">Day/Time</th>`;
+                        hours.forEach(hour => {
+                            tableHTML += `<th scope="col">${hour}:00 - ${hour + 1}:00</th>`;
+                        });
+                        tableHTML += `</tr></thead><tbody>`;
+
+                        days.forEach(day => {
+                            tableHTML += `<tr><th scope="row">${day}</th>`;
+                            hours.forEach(hour => {
+                                if (timetableData[department][year][day] && timetableData[department][year][day][hour]) {
+                                    let classInfo = timetableData[department][year][day][hour];
+                                    tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
+                                } else {
+                                    tableHTML += `<td>-</td>`;
+                                }
+                            });
+                            tableHTML += `</tr>`;
+                        });
+
+                        tableHTML += `</tbody></table></div>`;
+                        timetableContainer.append(tableHTML);
+                    }
                 }
             },
             error: function(error) {
@@ -636,6 +652,7 @@ $(document).ready(function() {
     // Load timetable when the page is ready
     loadTimetable();
 });
+
 
 </script>
 

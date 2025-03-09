@@ -165,8 +165,13 @@ def class_timetable(request):
 
         for schedule in class_schedules:
             dept_name = schedule.department.name  # Group by department
+            year_name = f"Year {schedule.year.level}"  # Group by academic year (e.g., Year 1, Year 2)
+
             if dept_name not in timetable_data:
                 timetable_data[dept_name] = {}
+
+            if year_name not in timetable_data[dept_name]:
+                timetable_data[dept_name][year_name] = {}
 
             time_slots = TimeSlot.objects.filter(unit=schedule.unit, instructor=schedule.lecturer)
 
@@ -175,11 +180,11 @@ def class_timetable(request):
                 start_hour = slot.start_time.hour  
                 end_hour = slot.end_time.hour  
 
-                if day not in timetable_data[dept_name]:
-                    timetable_data[dept_name][day] = {}
+                if day not in timetable_data[dept_name][year_name]:
+                    timetable_data[dept_name][year_name][day] = {}
 
                 for hour in range(start_hour, end_hour):  
-                    timetable_data[dept_name][day][hour] = {
+                    timetable_data[dept_name][year_name][day][hour] = {
                         "unit": schedule.unit.code,
                         "course": schedule.course.name,
                         "instructor": f"{schedule.lecturer.first_name} {schedule.lecturer.last_name}"
@@ -188,3 +193,4 @@ def class_timetable(request):
         return JsonResponse({"timetable_data": timetable_data})
 
     return render(request, "timetabling/index.html")
+
