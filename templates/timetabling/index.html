@@ -518,8 +518,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 hours.forEach(hour => {
                                     if (timetableData[department][year][day] && timetableData[department][year][day][hour]) {
                                         let classInfo = timetableData[department][year][day][hour];
-                                        tableHTML += `<td>${classInfo.unit} (${classInfo.instructor})</td>`;
-                                        courseDetails.add(`${classInfo.unit} - ${classInfo.course} (${classInfo.instructor})`);
+                                        tableHTML += `<td>${classInfo.unit}</td>`;
+                                        courseDetails.add(`${classInfo.unit} - ${classInfo.unitname} (${classInfo.instructor})`);
                                     } else {
                                         tableHTML += `<td>-</td>`;
                                     }

@@ -190,6 +190,7 @@ def class_timetable(request):
                 for hour in range(start_hour, end_hour):  
                     timetable_data[dept_name][year_name][day][hour] = {
                         "unit": schedule.unit.code,
+                        "unitname": schedule.unit.name,
                         "course": schedule.course.name,
                         "instructor": f"{schedule.lecturer.first_name} {schedule.lecturer.last_name}"
                     }
